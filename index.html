@@ -45,6 +45,9 @@ body.cust .judge{display:none} body.cust .read{font-size:20px}
 .yr{border-top:1px dashed var(--line);padding:10px 0} .yr:first-child{border-top:0}
 .yr h4{margin:0 0 4px;font-size:15px} .yr.warn h4{color:var(--warn)} .yr .todo{font-family:var(--sans);font-size:14px;font-weight:700;color:var(--acc)}
 .mind{border:2px solid var(--acc);border-radius:12px;padding:14px 18px;background:var(--paper)}
+.refs{margin-top:18px;border-top:1px solid var(--line);padding-top:12px;font-size:14px;color:var(--ink2);max-width:760px}
+.refs h3{font-family:var(--serif);font-size:16px;color:var(--ink);margin:0 0 8px} .refs p{margin:6px 0} .refs p b{color:var(--ink);margin-right:8px;font-weight:600}
+.refs details{margin-top:8px} .refs summary{cursor:pointer;color:var(--acc)} .refs ul{margin:6px 0 0;padding-left:20px} .refs li{margin:3px 0;overflow-wrap:anywhere}
 .mind ol{margin:0;padding-left:22px;font-family:var(--serif);font-size:17px} .mind li{margin:8px 0} .mind li b{display:block} .mind li span{color:var(--ink2);font-size:15px}
 /* A 두루마리 */
 .A .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 0;display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center}
@@ -536,7 +539,7 @@ function read(o){
   if(gTen==='식신'&&anyTen('편인')) breakers.push('편인도식 위험');
   if((gTen==='정인'||gTen==='편인')&&gw['재성']>gw['인성']) breakers.push('재극인(재가 인성보다 무거움)');
   if((gTen==='정재'||gTen==='편재')&&gw['비겁']>gw['재성']) breakers.push('군겁쟁재(비겁이 재보다 무거움)');
-  POS.forEach(function(x){ if(x.layer==='지'&&x.gung!=='월'){ var rr=brRel(x.branch,mb); if(rr.some(function(k){return k==='충'||k.indexOf('형')===0||k.indexOf('파')===0;})) breakers.push('월지 '+BRH[mb]+'와 '+x.g+' '+BRH[x.branch]+' '+rr.join('·')); } });
+  POS.forEach(function(x){ if(x.layer==='지'&&x.gung!=='월'){ var rr=brRel(x.branch,mb); if(rr.some(function(k){return k==='충'||k.indexOf('형')===0||k.indexOf('파')===0;})) breakers.push('월지 '+BRH[mb]+('丑寅辰申戌'.indexOf(BRH[mb])>=0?'과 ':'와 ')+x.g+' '+BRH[x.branch]+' '+rr.join('·')); } });
   var c5={name:gName,ten:gTen,stem:STH[gk.stem],tugan:gk.tugan,at:gk.at,tuganDir:gk.at.map(function(a){return {'월간':'직접','년간':'막연·넓음','시간':'좁음'}[a];}),
     gil:!!GIL[gName],group:grp,note:gNote,yong:yong,yongOk:yong.some(function(y){return y.ok;}),breakers:breakers,
     type:(gk.tugan&&breakers.length===0&&yong.some(function(y){return y.ok;}))?'격국형(깔린 길)':'억부형(스스로 찾는 길)'};
@@ -742,6 +745,7 @@ function render(c){
   L.push(c.c5.name+' ('+c.c5.stem+', '+(c.c5.tugan?('투간 '+c.c5.at.join('·')+' — '+c.c5.tuganDir.join('·')):(c.c5.group==='왕지'?'투간 없음(왕지라 그 자체로 격)':'투간 없음 — 「하고는 있는데 억지로」'))+') · '+(c.c5.gil?'길격(순용)':'흉격(역용 — 제화 필수)')+(c.c5.note?' · '+c.c5.note:''));
   c.c5.yong.forEach(function(y){ L.push('  격의 용 후보 '+y.name+'('+y.need+'): '+(y.ok?y.found.map(function(f){return f.g+' '+f.char;}).join(', ')+(y.visible?'':' (지지에만)'):'없음')); });
   L.push('깨는 글자: '+j(c.c5.breakers)+' · 판정: '+c.c5.type);
+  L.push('취격 기준: 월지 지장간 중 천간에 뜬 글자(정기→중기, 생지 여기 戊 제외) · 사령 일수 미사용 〔R8〕〔R10〕');
   L.push('');
   L.push('## ⑥ 궁성 〔三장〕');
   c.c6.forEach(function(g){ L.push('  '+g.g+' '+g.char+' · '+g.line+(g.relToDay.length?' · 일주와 '+g.relToDay.join('·'):'')+(g.unseong?' · 일간 12운성 '+g.unseong:'')); });
@@ -925,13 +929,13 @@ function explain(c){
   function addWhy(b,txt){ if(b&&txt) b.why=(b.why?b.why+' ':'')+'근거: '+dot(txt); }
   var il=c.c1.links.filter(function(k){return k.a.indexOf('일간')===0||k.b.indexOf('일간')===0;});
   addWhy(X.c1,il.map(function(k){return jh(k.a,'과와')+' '+jh(k.b,'은는')+' '+plainLink(k.txt);}).join(', '));
-  addWhy(X.c2,'태어난 달인 월지 '+jh(s.month,'이가')+' '+(s.hanNan.indexOf('한')===0?'찬 달':'따뜻한 달')+'이고, 일지 '+jh(s.dayBranch,'이가')+' '+(s.joSeup==='조'?'마른 바탕':'젖은 바탕')+'이며, 계절이 바라는 '+s.need.join('·')+'는 '+(s.found.length?s.found.map(function(f){return f.g+' '+f.char;}).join('·')+'에 있습니다':'팔자에 없습니다'));
+  addWhy(X.c2,'태어난 달인 월지 '+jh(s.month,'이가')+' '+(s.hanNan.indexOf('한')===0?'찬 달':'따뜻한 달')+'이고, 일지 '+jh(s.dayBranch,'이가')+' '+(s.joSeup==='조'?'마른 바탕':'젖은 바탕')+'이며, 계절이 바라는 '+jh(s.need.join('·'),'은는')+' '+(s.found.length?s.found.map(function(f){return f.g+' '+f.char;}).join('·')+'에 있습니다':'팔자에 없습니다'));
   var topSeats=seatsBy(function(x){return ELC[x.char]===top;}), hid3=c.c1.glyphs.filter(function(g){return g.hidden&&g.hidden.some(function(h){return !h.shown&&ELC[h.char]===top;});}).map(function(g){return g.g+' '+g.char+' 속';});
   addWhy(X.c3,top+' 기운은 '+(topSeats||'겉 글자에는 없고')+(hid3.length?', 그리고 '+hid3.join('·'):'')+'에 있습니다'+(S6.some(function(x){return x.g==='월지'&&ELC[x.char]===top;})?'. 특히 가장 센 월지가 '+top+'이라 무게가 큽니다':''));
   var help=seatsBy(function(x){return GRPx[x.ten]==='비겁'||GRPx[x.ten]==='인성';}), drain=seatsBy(function(x){return ['식상','재성','관성'].indexOf(GRPx[x.ten])>=0;});
   addWhy(X.c4,'내 편이 되는 글자(같은 기운·받쳐 주는 기운)는 '+(help||'없고')+(help?'이고':'')+', 힘을 쓰게 하는 글자(재주·돈·책임)는 '+(drain?drain+'입니다':'없습니다'));
   var g5=c.c5, yongS=[]; g5.yong.forEach(function(y){ y.found.forEach(function(f){ yongS.push(f.g+' '+f.char); }); });
-  addWhy(X.c5,'월지 '+(S6.filter(function(x){return x.g==='월지';})[0]||{char:''}).char+' 속의 '+jh(g5.stem,'이가')+' '+(g5.tugan?g5.at.join('·')+'로 드러나':'드러나지는 않았지만 월지의 주인이라')+' '+g5.name+'이 되었고, 그 재주를 쓰게 해 주는 글자는 '+(yongS.length?yongS.join('·')+'입니다':'팔자에 없습니다')+(g5.breakers.length?'. 흔드는 것: '+g5.breakers.join(', '):''));
+  addWhy(X.c5,'월지 '+(S6.filter(function(x){return x.g==='월지';})[0]||{char:''}).char+' 속의 '+jh(g5.stem,'이가')+' '+(g5.tugan?g5.at.join('·')+'으로 드러나':'드러나지는 않았지만 월지의 주인이라')+' '+g5.name+'이 되었고, 그 재주를 쓰게 해 주는 글자는 '+(yongS.length?yongS.join('·')+'입니다':'팔자에 없습니다')+(g5.breakers.length?'. 흔드는 것: '+g5.breakers.join(', '):''));
   addWhy(X.c7,'가장 큰 기운인 '+c.c7.many+'은 '+(seatsBy(function(x){return GRPx[x.ten]===c.c7.many;})||'지장간')+'에 있습니다'+(c.c7.none.length?'. 비어 있는 기운: '+c.c7.none.join('·'):''));
   // ── 마지막: 이것만은 명심하세요 (우선순위 3개) ──
   var M=[];
@@ -1197,7 +1201,7 @@ function build(c){
   paras.push('당신을 살리는 쪽은 '+L[1]+'입니다. 힘들 때 이쪽으로 가면 살길이 열립니다. 다만 나를 살리는 쪽은 나 때문에 힘들다는 것도 기억하세요. 너무 기대지 말고 고마워하는 것이 오래 가는 길입니다.');
   paras.push('반대로 평생 당신을 볶는 쪽은 '+BURN[me][f]+'입니다.'+(SANG[me]?' 특히 제 성질이 저를 힘든 쪽으로 모는 구조라, 좀 참고 손해 보는 셈 치는 것이 결국 남는 길입니다.':' 이쪽 일이 터지면 「또 그러는구나」 하고 먼저 인정하면 덜 흔들립니다.'));
   paras.push('그리고 흙(土) 기운은 해마다 가장 자주 들어오는 기운이라, 당신에게 흙이 뜻하는 '+EARTH[c.meEl][f]+'가 평생의 숙제처럼 따라옵니다.');
-  if(sajiSeat.length) paras.push(sajiSeat.join('·')+'는 당신의 기운이 힘을 잃는 글자입니다. 이런 글자를 가진 사람은 집에 틀어박혀 있으면 아프고, 밖으로 나가 일하고 움직여야 삽니다.');
+  if(sajiSeat.length) paras.push(sajiSeat.join('·')+('甲乙丙丁庚辛壬丑寅辰申戌'.indexOf(sajiSeat[sajiSeat.length-1].slice(-1))>=0?'은':'는')+' 당신의 기운이 힘을 잃는 글자입니다. 이런 글자를 가진 사람은 집에 틀어박혀 있으면 아프고, 밖으로 나가 일하고 움직여야 삽니다.');
   return {lead:'평생 당신을 살리는 쪽은 '+L[1]+'이고, 볶는 쪽은 '+BURN[me][f]+'입니다.',paras:paras,
     judge:'살리는 쪽(장생지 '+L[2]+'의 십성) '+L[0]+' · 볶는 쪽(사지 '+SAJI[me]+' 속 십성) · 土의 십성 · 사지 글자 보유 '+(sajiSeat.join('·')||'없음')+' 【원탑 [1][52][45][5]】'};
 }
@@ -1206,6 +1210,8 @@ return {build:build};
 
 /* 일 — 타고난 여덟 글자로 본 뛰어난 능력과 어울리는 일
    근거: 정본 四장 1·3절, 六장 1-4(격별 직업 코드), 원탑 [36][37][100](업종 오행: 재 > 식상 > 관·인), 정동찬 천간 상태(二장 2절)
+   자리별 십성 역량을 더해 왕한 십성으로 적성을 보는 방식은 〔R13〕 최은희(2020)와 같은 방법. 자리 무게 값(SEATW)은 설계값(논문 수치 아님).
+   오행 개수만으로 직업을 정하지 않고 자리·구조·격을 함께 보는 것은 〔R14〕의 결론(개수 우열만으로는 적성 분석이 어렵다)과 같은 방향.
    직업 목록: 엔진/jobs.json(그 집과 같은 오행별 목록, 전역 JOBS) */
 var PJ = (function(){
 "use strict";
@@ -1298,7 +1304,7 @@ function build(c){
     judge:'년간 '+(y?y.char+'('+y.ten+')':'-')+' · 월간 '+(m?m.char+'('+m.ten+')':'-')+' · 가장 큰 기운 '+domG+'('+seats(domG)+') · 일간 합 성향 '+(HAPMEAN[me]||'')+' · 한난 '+c.c2.hanNan+' · 조습 '+js,
     read:blk(WORLD[domG].split('. ')[0],
       '당신 사주에서 가장 큰 기운이 '+domG+'('+seats(domG)+')이라 그렇습니다. 일간 '+me+'('+RD[me]+')의 결은 '+HAPMEAN[me]+'. 그리고 '+(hn?'찬 계절('+c.c2.month+'월)에 나서 세상을 천천히, 오래 두고 봅니다':'따뜻한 계절('+c.c2.month+'월)에 나서 세상을 빨리 읽고 빨리 반응합니다'),
-      (y?'처음 만난 사람들은 당신을 '+FIRST[y.ten]+'으로 봅니다(년간 '+y.char+'은 첫인상의 자리). ':'')+WORLD[domG].split('. ')[1]+'.',
+      (y?'처음 만난 사람들은 당신을 '+FIRST[y.ten]+'으로 봅니다(년간 '+y.char+((function(r){var c=r.charCodeAt(0)-0xAC00;return c>=0&&c%28>0;})(RD[y.char]||'가')?'은':'는')+' 첫인상의 자리). ':'')+WORLD[domG].split('. ')[1]+'.',
       hn?'판단이 늦은 대신 한번 정하면 오래 갑니다. 그러니 빨리 결정하라고 재촉하는 자리는 피하고, 충분히 보고 정하세요. 왜냐하면 당신은 늦게 시작해도 뒷심으로 앞지르는 사람이기 때문입니다':'반응이 빠른 대신 금방 식기 쉽습니다. 그러니 처음 끌림만 믿지 말고 한 번 더 확인하세요. 왜냐하면 빨리 받아들인 것은 빨리 버려지기 때문입니다')});
   // 2. 사람을 대하는 방식
   var dg=DAY[ib?ib.group:'왕지'], noBi=!(G['비겁']>0.3), manyBi=G['비겁']>=3, sik=G['식상'], ins=G['인성'];
@@ -1320,6 +1326,27 @@ var PK = (function(){
 function sections(R){ var J={}; R.split(/\n## /).slice(1).forEach(function(part){ J[part.charAt(0)]=part.split('\n').slice(1).join('\n').trim(); }); return J; }
 var REL_TXT={'충':'정면으로 부딪치는 사이','육합':'붙어서 떨어지기 어려운 사이','형':'서로 세게 다잡는 사이','형(子卯)':'생각이 많아지고 엎어지기 쉬운 사이','자형':'같은 기운이 겹쳐 스스로를 볶는 사이','파':'조금씩 금이 가는 사이','파(보스)':'구설과 질투가 따르는 사이','해':'옆에서 은근히 괴롭히는 사이','원진':'괜히 서운하고 미운 사이','귀문':'예민하게 신경이 쓰이는 사이'};
 var KIN={'년간':'할아버지','년지':'할머니(집안)','월간':'아버지','월지':'어머니(자라 온 환경)','일간':'나','일지':'배우자(내 생활)','시간':'자녀','시지':'자녀(속마음)'};
+// 풀이의 근거와 한계 — 정본/참고문헌.md 요약(손님에게 보여도 되는 문장)
+var REFS={title:'이 풀이의 근거와 한계',
+  paras:[
+   ['무엇을 바탕으로','『자평진전』『적천수』『궁통보감』『삼명통회』 같은 명리 고전이 정리한 통설을 뼈대로 하고, 원탑명리의 해석을 붙였습니다. 정동찬(혜강명리)·노쌤의 관법으로 보강했습니다.'],
+   ['학술 연구와 맞춰 본 것','격을 잡는 법(태어난 달 속 글자가 천간에 드러난 것으로 봄), 용신을 계절·격·강약으로 나눠 보는 것, 네 기둥과 가족의 대응, 계절(조후) 판단, 자리별 기운을 더해 적성을 보는 방식은 국내 학술 논문의 정리와 같습니다.'],
+   ['선생님들의 관법','온도·습도(한난조습)의 두 축, 천간 글자의 상태, 운을 합·충으로 읽는 법, 실제 생활 장면은 각 선생님의 관법입니다. 항목 제목 옆 작은 글씨에 출처를 적어 두었습니다.'],
+   ['한계','사주 풀이가 앞일을 맞힌다는 것은 과학적으로 검증되지 않았습니다. 이 풀이는 나를 이해하고 결정을 돌아보는 참고로 써 주세요. 건강·법률·돈 문제는 전문가와 상의하세요.']],
+  list:[
+   'B1 심효첨 『자평진전』, 서락오 평주 — 박영창 역 『자평진전평주』 · 오청식 역주 『자평진전평주』(2024)',
+   'B4 『적천수천미』 — 김기승·김현덕 역(2017)',
+   'B7 『궁통보감』(난강망)',
+   'B9 단건업 『맹파명리』 — 박형규 역',
+   'R1·R2 진영아·최정준(2021·2022), 『궁통보감』의 명리이론 특징 / 용신의 의미와 〈희용제요〉',
+   'R3 김현정(2023), 명리학 관점에서 체용론 수용양상 연구, 『인문사회 21』 14(3)',
+   'R4 이수동(2020), 명리학 육친론의 이론체계 고찰 — 궁위론과 십성론, 『문화와융합』 42(9)',
+   'R5 이명재(2022), 자평명리학의 육친론 고찰, 『중국인문과학』 80',
+   'R8 최원호·김나현·김기승(2024), 인원용사의 연원에 관한 연구, 『Industry Promotion Research』 9(1)',
+   'R10 이수동(2020), 명리학 격국용신론의 근원적 고찰, 『도교문화연구』 52',
+   'R13 최은희(2020), 명리학의 적성론에서 왕한 십성과 격국의 비교 연구, 『인문사회 21』 11(3)',
+   'R19 김성덕(2018), 명리의 과학적 한계와 철학적 전환, 『인문사회 21』 9(2)',
+   'R20 Jung & Yang(2015), Relations between Eastern Four Pillars Theory and Western Measures of Personality Traits, Yonsei Medical Journal 56(3)']};
 function build(input){
   var c=PD.read(input), X=PX.explain(c), R=PD.render(c), J=sections(R), G={};
   PG.glyphs(c).forEach(function(g){ G[g.g]=g; });
@@ -1331,11 +1358,11 @@ function build(input){
   var na=[
     {id:'me',title:'일간과 일지 — 나라는 글자',src:'一·二장 · 정38~43',judge:[glJudge('일간'),glJudge('일지')].concat(linkRaw.filter(function(k){return k.a.indexOf('일간')===0&&k.kind==='기둥';}).map(function(k){return '[기둥] '+k.a+' ↔ '+k.b+' : '+k.txt;})).join('\n'),
      read:X.c1, paras:[G['일간'].text].concat(ilLink).filter(Boolean)},
-    {id:'season',title:'태어난 계절과 온도·습도',src:'二장 3·4',judge:J['②'],read:X.c2},
-    {id:'eight',title:'명식 여덟 글자 — 자리와 온도·습도로 본 영향',src:'二장 4 · 三장 1 · 정282·101',judge:E8.map(function(e){return e.judge;}).join('\n')+'\n'+linkRaw.map(function(k){return '['+k.kind+'] '+k.a+' ↔ '+k.b+' : '+k.txt;}).join('\n'),
+    {id:'season',title:'태어난 계절과 온도·습도',src:'二장 3·4 · 궁통보감〔R1·R2〕 · 정동찬 한난조습',judge:J['②'],read:X.c2},
+    {id:'eight',title:'명식 여덟 글자 — 자리와 온도·습도로 본 영향',src:'二장 4 · 三장 1 궁위〔R4〕 · 정282·101',judge:E8.map(function(e){return e.judge;}).join('\n')+'\n'+linkRaw.map(function(k){return '['+k.kind+'] '+k.a+' ↔ '+k.b+' : '+k.txt;}).join('\n'),
      glyphs:E8, paras:L.filter(function(t,i){return !(linkRaw[i].a.indexOf('일간')===0&&linkRaw[i].kind==='기둥');})},
     {id:'wuxing',title:'다섯 기운의 흐름',src:'二장 5·6 · 노쌤',judge:J['③'],read:X.c3,paras:X.c3.real?[X.c3.real]:[]},
-    {id:'power',title:'나의 힘',src:'六장 2',judge:J['④'],read:X.c4},
+    {id:'power',title:'나의 힘',src:'六장 2 · 적천수 억부〔B4〕',judge:J['④'],read:X.c4},
     (function(){ var Lf=PL.build(c); return {id:'life',title:'평생 따라오는 일 — 나를 살리는 쪽, 볶는 쪽',src:'원탑 [1][52][45][5]',judge:Lf.judge,paras:[Lf.lead].concat(Lf.paras)}; })()];
   // 관계
   var seatOrder=['월지','월간','일지','시간','시지','년간','년지'];
@@ -1344,15 +1371,15 @@ function build(input){
   var pairs=c.c8.pairs.map(function(p){ var k=p.kinds.filter(function(z){return REL_TXT[z];});
     return k.length?((KIN[p.a]||p.a)+'와 '+(KIN[p.b]||p.b)+' 자리('+p.ac+'·'+p.bc+')는 '+REL_TXT[k[0]]+'입니다'+(p.adjacent?'':' (떨어져 있어 힘은 약합니다)')+'.'):null; }).filter(Boolean);
   var gwan=PR.build(c).concat([
-    {id:'seats',title:'곁에 있는 사람들',src:'三장 · 정101~103',judge:J['⑥']+'\n'+(J['⑧'].split('\n생·왕·고')[0]||''),seats:seats,extra:X.c6extra,
+    {id:'seats',title:'곁에 있는 사람들',src:'三장 · 궁위·육친〔R4·R5〕 · 정101~103',judge:J['⑥']+'\n'+(J['⑧'].split('\n생·왕·고')[0]||''),seats:seats,extra:X.c6extra,
      paras:pairs.length?pairs:['자리끼리 크게 부딪치거나 묶인 곳이 없어, 가까운 사람 사이가 비교적 무난합니다.']}]);
   // 일
   var PJd=PJ.build(c), PJx=PJ.explain(c,PJd);
   var il=[
-    {id:'innate',title:'타고난 여덟 글자로 본 일 — 뛰어난 능력과 어울리는 일',src:'四장 · 六장 1-4 · 원탑 [36][100]',
+    {id:'innate',title:'타고난 여덟 글자로 본 일 — 뛰어난 능력과 어울리는 일',src:'四장 · 六장 1-4 · 왕한 십성 적성론〔R13〕 · 원탑 [36][100]',
      judge:PJd.abil.map(function(a){return '능력 '+a.ten+' '+a.score+'점 ← '+a.ev.join('·');}).join('\n')+'\n'+PJd.states.map(function(x){return '상태 '+x.g+' '+x.char+' '+x.state;}).join('\n')+'\n업종 오행: '+PJd.elJobs.map(function(x){return x.el+'('+x.group+')';}).join(', ')+' · 구조 '+(PJd.struct.join(',')||'-'),
      read:{lead:PJx.lead,why:PJx.why,past:PJx.past,todo:PJx.todo}, paras:PJx.paras.concat(['어울리는 직업: '+PJx.jobs.join(' / ')+'.'])},
-    {id:'gyeok',title:'사회가 보는 나 — 격',src:'六장 1 · 정127·136',judge:J['⑤'],read:X.c5},
+    {id:'gyeok',title:'사회가 보는 나 — 격',src:'六장 1 · 자평진전〔B1·R10·R8〕 · 정127·136',judge:J['⑤'],read:X.c5},
     {id:'frame',title:'직업의 틀 — 월간·월지',src:'三장 3 · 정103',judge:[glJudge('월간'),glJudge('월지')].join('\n'),paras:[G['월간'].text,G['월지'].text]},
     {id:'struct',title:'일하는 구조',src:'四장 3',judge:J['⑦'],read:X.c7}];
   // 운
@@ -1361,13 +1388,13 @@ function build(input){
   (nine[1]||'').split('\n').forEach(function(l){ var m=l.match(/^\s+(\d{4}) /); if(m) sj[m[1]]=l.trim(); else if(l.trim()){ var k=Object.keys(sj).pop(); if(k) sj[k]+='\n'+l.trim(); } });
   var years=c.c9.seun.map(function(y){ var r=PG.year(c,y); r.judge=sj[y.year]||''; return r; });
   var un=[
-    {id:'daeun',title:'지금 10년',src:'七장 2',judge:nine[0],read:X.c9,paras:dd?dd.paras:[]},
-    {id:'seun',title:'앞으로 10년, 해마다',src:'七장 3·4 · 五장 8',years:years},
-    {id:'timing',title:'시작·한창·정리의 해',src:'五장 1-5',judge:(J['⑧'].split('\n').filter(function(l){return /삼합|생·왕·고/.test(l);}).join('\n')),paras:X.c8}];
+    {id:'daeun',title:'지금 10년',src:'七장 2 · 대운법(통설) · 원탑·정동찬',judge:nine[0],read:X.c9,paras:dd?dd.paras:[]},
+    {id:'seun',title:'앞으로 10년, 해마다',src:'七장 3·4 · 五장 8 · 원탑·정동찬',years:years},
+    {id:'timing',title:'시작·한창·정리의 해',src:'五장 1-5 · 삼합(통설) · 원탑',judge:(J['⑧'].split('\n').filter(function(l){return /삼합|생·왕·고/.test(l);}).join('\n')),paras:X.c8}];
   return {c:c,head:{pillars:c.c1.pillars,c6:c.c6,info:c.c5.name+' · '+c.c4.level+' · 대운수 '+c.c1.daeun_n+(c.c1.fwd?' 순행':' 역행'),age:c.c1.age},
     cats:[{key:'na',name:'나',items:na},{key:'gwan',name:'관계',items:gwan},{key:'il',name:'일',items:il},{key:'un',name:'운',items:un}],mind:X.mind};
 }
-return {build:build};
+return {build:build,refs:REFS};
 })();
 
 </script>
@@ -1395,7 +1422,8 @@ function body(it,onlyYear){
     r+=ys.map(function(y){ return '<div class="yr'+(y.warn?' warn':'')+'"><h4>'+esc(y.head)+'</h4>'+(y.judge?'<div class="judge">'+esc(y.judge)+'</div>':'')+y.paras.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+(y.real&&y.real.length?'<p><span class="lab">실제로는</span>'+y.real.map(esc).join(' ')+'</p>':'')+'<p class="todo">할 일 · '+esc(y.todo)+'</p></div>'; }).join(''); }
   return h+'<div class="read">'+r+'</div>';
 }
-function mind(){ return '<div class="mind"><ol>'+B.mind.map(function(m){return '<li><b>'+esc(m.title)+'</b><span>'+esc(m.why)+'</span></li>';}).join('')+'</ol></div>'; }
+function refs(){ var R=PK.refs; return '<div class="refs"><h3>'+esc(R.title)+'</h3>'+R.paras.map(function(p){return '<p><b>'+esc(p[0])+'</b>'+esc(p[1])+'</p>';}).join('')+'<details><summary>주요 참고문헌 '+R.list.length+'</summary><ul>'+R.list.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></details></div>'; }
+function mind(){ return '<div class="mind"><ol>'+B.mind.map(function(m){return '<li><b>'+esc(m.title)+'</b><span>'+esc(m.why)+'</span></li>';}).join('')+'</ol></div>'+refs(); }
 function info(){ return esc(B.head.info+' · '+B.head.age+'세'); }
 function drawA(){
   var h='<div class="A"><div class="wrapA"><div class="bar">'+mj()+'<div class="catnav">'+B.cats.map(function(c){return '<a href="#cat-'+c.key+'">'+c.name+'</a>';}).join('')+'<a href="#cat-mind">명심</a></div><div class="info">'+info()+'</div></div>';
