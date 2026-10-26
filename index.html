@@ -1442,12 +1442,47 @@ function body(c){
   if(W['木'].pct<12&&W['火'].pct<12){ out.push('나무와 불 기운이 둘 다 약해, 욱하는 순간이 성격보다 몸에서 먼저 옵니다. 갑자기 화가 치밀면 간과 심혈관이 지쳤다는 신호로 보고 쉬세요.'); judge.push('木火 약 → 욱 [67]'); }
   if(c.c4.level==='신약'){ var me=elOf(c.me); out.push('나를 뜻하는 기운이 약한 편이라 스트레스가 몸으로 오래 남습니다. '+ELN[me]+' 일간은 '+ORGS[me]+' 쪽이 먼저 지칩니다. 마음 건강도 몸에서 시작되니 몸부터 챙기세요.'); judge.push('신약 · 일간 '+me+' → '+ORGS[me]+' [84]'); }
   if(c.c3.lonely.length){ var l=c.c3.lonely[0]; out.push(l.g+' '+l.char+'('+ELN[l.el]+')처럼 팔자에 하나뿐인 기운은, 그 글자가 합이나 충을 맞는 해에 '+ORGS[l.el]+' 쪽 고비가 오기 쉽습니다. 「해마다」에 그런 해를 표시해 두었습니다.'); judge.push('외톨이 '+l.g+' '+l.char+' → '+ORGS[l.el]+' [89][116]'); }
+  sgBody(c).forEach(function(t){ out.push(t); judge.push('매금(戊辛) [정381]'); });
+  if(weak.length) out.push('부족한 기운을 채우려고 먼 지방으로 옮길 필요는 없습니다. '+ELN[weak[0]]+' 기운이 약하면 '+PLACE[weak[0]]+'처럼 생활 공간에서 채우세요. 「火가 없으니 남쪽으로 이사하라」는 식의 방위 처방은 쓰지 않습니다 [정381]');
   var hn=c.c2.hanNan.indexOf('한')===0, dry=c.c2.joSeup==='조';
   out.push((hn?'찬 계절에 태어나 몸을 데우는 쪽이 맞습니다. 햇볕을 쬐고, 따뜻하게 익힌 음식과 아침 운동이 몸을 살립니다':'더운 계절에 태어나 몸을 식히는 쪽이 맞습니다. 물을 자주 마시고, 열을 내리는 제철 채소와 서늘한 저녁 휴식이 몸을 살립니다')+(dry?'. 바탕이 마른 편이라 수분과 촉촉한 음식(국·죽·과일)을 챙기세요.':'. 바탕이 젖은 편이라 땀을 내서 습기를 빼 주는 운동이 좋습니다.'));
   judge.push('한난 '+c.c2.hanNan+' · 조습 '+c.c2.joSeup+' → '+(hn?'데움':'식힘')+'·'+(dry?'수분':'습기 빼기')+' [정본 二장 4]');
   out.push('사상체질(태양인·소양인 등)은 체형과 성정으로 따로 판단하는 한의학 체계라 사주로 정하지 않습니다. 여기 적은 것은 몸이 보내는 신호이고, 이상하면 꼭 병원에서 확인하세요. 한 곳만 믿지 말고 필요하면 다른 병원에서도 확인하세요.');
   return {judge:judge.join('\n'),paras:out};
 }
+// ── 정동찬 「진짜 상관 - 1」 [정381] — 상관의 주도권·외부 자극·일간별 상관 쌍(甲丁·乙丙·丙己·丁戊·戊辛) ──
+var SGP={'甲丁':{who:'한 부분만 특화해 장단이 확실하고, 순발력 있게 받아치며 상황에 맞춰 말합니다. 멀티가 안 되고 몰입하는 대상이 수시로 바뀌어, 바쁠 때는 연락이 끊기기 쉽습니다',job:'사업·영업처럼 상황 판단과 말이 무기가 되는 일(한 분야에 몰빵할 때 강함)',fork:'주변 글자가 실제로 실행할 힘을 주면 어떤 상황에도 대처하는 사업가가 되고, 아니면 그 순간만 넘기는 말이 됩니다. 간발의 차입니다',year:'그해 丁이 들어와 甲의 기운을 끌어 한 가지에 몰입하게 합니다. 말이 빨라지니 약속과 계약은 실행할 수 있는 것만 하세요'},
+ '乙丙':{who:'저절로 피어나는 상관이라 어디서든 살아남고, 매력이 사방으로 퍼져 눈에 띕니다. 말이 거칠어도 재미있고 밝게 들립니다',job:'재능으로 사는 일 — 노출되는 일(예체능·방송·인플루언서), 대중을 상대하는 일',fork:'여러 가지를 다 잘해 직업을 하나로 정하기 어렵습니다. 그중 돈이 되는 하나를 찾아야 하고, 돈과 자리(재관)가 들어오는 운에 하던 일이 직업이 되기 쉽습니다',year:'그해 丙이 들어와 乙의 꽃이 핍니다. 재능을 찾는 해입니다. 취미로 배운 것이 길이 될 수 있습니다. 다만 눈에 띄는 만큼 말은 조심하세요'},
+ '丙己':{who:'높은 태양이 내려와 악수하는 격이라 가장 친근하고, 현실과 실속을 따집니다. 사람이 많이 모이니 인연은 골라서 맺으세요',job:'유통·판매처럼 보여 주고 파는 일(형체 있는 상품)',fork:'쇠(金)로 이어지면 판매가 결과로 남고, 흙에서 멈추면 「다음에 뭘 해야 하나」가 반복되고 말만 앞섭니다',year:'그해 己가 들어와 丙을 품어 사람과 실속이 모입니다. 보여 주고 파는 일이 풀리지만, 다음 단계(정리·결과)까지 계획하세요'},
+ '丁戊':{who:'나를 지키는 상관이라 「싫다」는 말도 상대가 싫어서가 아니라 나를 보호하려는 것입니다. 의외로 조용하고 생활 반경이 좁으며, 익숙한 것을 오래 지킵니다',job:'정신계·철학·상담처럼 무형의 가치를 다루는 일',fork:'이 상관을 돈(토생금)으로 쓰는지, 배움(목극토)으로 다스리는지, 규칙과 부딪치는지(토극수)에 따라 해석이 완전히 바뀝니다',year:'그해 戊가 들어와 丁을 지켜 줍니다. 거절이 늘고 생활 반경이 좁아지는데, 나를 지키는 방어이니 자책하지 마세요'},
+ '戊辛':{who:'말이 가장 날카로운 상관입니다. 다만 흙이 쇠를 덮으면(매금) 머리로는 알고 의지도 있는데 다음으로 넘어가지 못해 벽에 막히고, 그러면 남이나 제도를 탓하기 쉽습니다',job:'잘못을 짚고 판을 바꾸는 일 — 비평·감사·언론·약자를 대변하는 일, 오래 막힌 문제를 푸는 전문가',fork:'쇠(金)가 왕하면 막히지 않고 판을 바꾸는 힘이 되고, 흙이 너무 많으면 말할 기회조차 묻힙니다',year:'그해 辛이 들어와 戊의 말이 날카로워집니다. 벽에 막히면 남 탓하기 쉬우니, 탓 대신 근거를 갖춰 바꾸는 쪽으로 쓰세요'}};
+var JGI={'子':'癸','丑':'己','寅':'甲','卯':'乙','辰':'戊','巳':'丙','午':'丁','未':'己','申':'庚','酉':'辛','戌':'戊','亥':'壬'};
+var SGGEN='상관은 상관이 주도권을 쥐는 기운입니다. 내가 계획해서 쓰는 식신과 달리, 나를 누르는 자극(규칙·윗사람·압박)이 있을 때 무조건 반사처럼 튀어나옵니다. 자극이 없으면 티가 안 나고, 자극이 오면 순간적으로 받아칩니다 [정381]';
+var KILHUNG={'식신':'길신이라 내가 의도해서 쓰는 기운입니다','정재':'길신이라 내가 의도해서 쓰는 기운입니다','정관':'길신이라 내가 의도해서 쓰는 기운입니다','정인':'길신이라 내가 의도해서 쓰는 기운입니다','상관':'흉신이라 내 의도와 상관없이 일이 벌어지는 쪽의 기운입니다(일간이 주도권을 쥐기 어려움)','편관':'흉신이라 내 의도와 상관없이 일이 벌어지는 쪽의 기운입니다(일간이 주도권을 쥐기 어려움)','편인':'흉신이라 내 의도와 상관없이 일이 벌어지는 쪽의 기운입니다(일간이 주도권을 쥐기 어려움)','겁재':'흉신이라 내 의도와 상관없이 일이 벌어지는 쪽의 기운입니다(일간이 주도권을 쥐기 어려움)'};
+function sgPairs(c){ var st=c.c1.glyphs.filter(function(g){return g.layer==='간';}), out=[];
+  Object.keys(SGP).forEach(function(k){ var a=k.charAt(0), b=k.charAt(1);
+    var A=st.filter(function(g){return g.char===a;}), B=c.c1.glyphs.filter(function(g){return g.g!=='일간'&&(g.char===b||(g.layer==='지'&&JGI[g.char]===b));}).sort(function(x,y){return (x.layer==='간'?0:1)-(y.layer==='간'?0:1);});
+    if(!A.length||!B.length) return; var meA=c.me===a;
+    out.push({k:k,me:meA,a:A[0],b:B[0],inBranch:B[0].layer==='지'}); });
+  return out; }
+function sgParts(c,glyph){ var P=[];
+  if(KILHUNG[glyph.ten]) P.push(['길신·흉신', KILHUNG[glyph.ten]+'. 길흉은 좋고 나쁨이 아니라 내가 주도권을 쥘 수 있느냐의 차이입니다 [정381]']);
+  if(glyph.ten==='상관') P.push(['상관의 결', SGGEN]);
+  sgPairs(c).forEach(function(q){ if(q.b.g!==glyph.g) return; var D=SGP[q.k];
+    P.push(['상관 쌍 '+q.k, (q.me?'일간 '+q.k.charAt(0)+'에게 '+jo(q.k.charAt(1),'은는')+' 상관입니다. ':'팔자에 '+jo(q.k.charAt(0),'과와')+' '+jo(q.k.charAt(1),'이가')+' 함께 있어, 일간이 아니어도 이 결이 나타납니다. ')+(q.inBranch?'(지지 속에 든 '+q.k.charAt(1)+'라 조금 약하게) ':'')+D.who+'. 갈림길: '+D.fork+' [정381]']); });
+  var W={}; c.c3.weights.forEach(function(w){W[w.el]=w.pct;});
+  if(glyph.char==='丁'&&W['木']>=35) P.push(['목다화식', '나무가 너무 많아 불이 오히려 꺼지는 「목다화식」은 촛불인 丁에만 해당하는 말입니다. 나무가 '+W['木']+'%라 丁이 숨이 막히지 않도록 쇠(金)로 나무를 덜어 내야 합니다 [정381]']);
+  return P; }
+function sgWork(c){ return sgPairs(c).map(function(q){ var D=SGP[q.k]; return '상관 재능 — '+q.k+(q.me?'(일간의 상관)':'(팔자의 두 글자)')+': '+D.who.split('. ')[0]+'. 맞는 일: '+D.job+'. 갈림길: '+D.fork+'. [정381]'; }); }
+function sgYear(c,y){ var out=[];
+  var k=c.me+y.stem; if(SGP[k]) out.push(SGP[k].year+' [정381]');
+  else { var kb=c.me+(JGI[y.branch]||''); if(SGP[kb]) out.push(SGP[kb].year.replace(/^그해 \S+ 들어와 /,'그해 지지 '+y.branch+' 속의 '+jo(JGI[y.branch],'이가')+' (지지 속이라 조금 약하게) ')+' [정381]'); }
+  return out; }
+function sgBody(c){ var out=[], W={}; c.c3.weights.forEach(function(w){W[w.el]=w.pct;});
+  var st=c.c1.glyphs.filter(function(g){return g.layer==='간';}).map(function(g){return g.char;});
+  if(st.indexOf('戊')>=0&&st.indexOf('辛')>=0&&W['土']>=30&&W['金']<20) out.push('흙(戊)이 쇠(辛)를 덮는 구조(매금)라, 먹은 것이 에너지로 잘 바뀌지 않는(흡수가 잘 안 되는) 쪽의 신호가 올 수 있습니다 [정381]');
+  return out; }
+var PLACE={'木':'나무와 숲이 보이는 곳','火':'높은 층과 밝고 볕 드는 방','土':'땅에 가까운 낮은 층, 오래 살던 안정된 동네','金':'잘 정돈된 공간','水':'물가나 서늘하고 조용한 방'};
 var TCH={'甲':'두통·신경·간','乙':'간·관절','丙':'심장·신장','丁':'심장','戊':'위장·피부','己':'소화기','庚':'장','辛':'폐','壬':'신장·자궁·혈당','癸':'복부·다리'};
 function yearBody(c,y){
   var W=weights(c), weak=weakEls(c), sE=elOf(y.stem), bE=elOf(y.branch), notes=[];
@@ -1639,7 +1674,7 @@ function yearJdc(c,y){
   var OPP={'정관':'편관','편관':'정관','정재':'편재','편재':'정재','정인':'편인','편인':'정인'};
   if(OPP[t]&&has(OPP[t])&&!has(t)) out.push('팔자의 '+OPP[t]+'에 그해 '+t+'가 더해져 두 가지 기준이 겹칩니다(안정과 모험, 책임과 재미 같은). 겸직이나 일이 가중되기 쉬우니 우선순위와 시간을 나누세요. [정7·207·334]');
   // 원리 41: 식신 vs 상관 운
-  if(t==='식신') out.push('그해는 식신 해라 내 계획대로 실행하고 스스로 멈출 수 있는 해입니다. [정17]'); else if(t==='상관') out.push('그해는 상관 해라 바깥의 요구와 자극에 반응해 움직이는 해입니다. 내 목표와 남의 요구를 나눠 적고 중단 기준을 정하세요. [정17·335]');
+  if(t==='식신') out.push('그해는 식신 해라 내 계획대로 실행하고 스스로 멈출 수 있는 해입니다. [정17]'); else if(t==='상관') out.push('그해는 상관 해라, 나를 누르는 자극에 반응해 재주와 말이 무조건 반사처럼 튀어나옵니다. 충동적인 결정과 말을 조심하고, 벽에 막히면 남 탓하기 쉬우니 근거를 갖춰 바꾸는 쪽으로 쓰세요. 내 목표와 남의 요구를 나눠 적고 중단 기준을 정하세요. [정17·335·381]');
   // 원리 42·47·48·51: 재 운의 연결
   if(tg==='식상'&&hasG('재성')) out.push('재주가 팔자의 돈 글자로 이어지는 해(식상생재)라 성과의 과녁이 생깁니다. 다만 입금 보증은 아니니 매출·비용·남는 현금을 따로 보세요. [정19·91]');
   if(tg==='재성'&&has('정관')) out.push('돈이 자리를 키우는 해(재생관)라 취업·등록·직책 같은 공식 역할이 늘고, 세금·관리비 같은 정당한 지출도 따라옵니다. [정19·20]');
@@ -1650,6 +1685,7 @@ function yearJdc(c,y){
   // 원리 46: 관인의 정편
   if(t==='정관'||t==='정인') out.push('허가·면허·문서처럼 공식적으로 인정받는 일이 생기는 해입니다. [정153·175]'); else if(t==='편관'||t==='편인') out.push('갑작스러운 업무나 스스로를 점검하는 일이 많아지는 해입니다. 고칠 것은 실행하면서 고치세요. [정153·176]');
   // 원리 59: 丙·午 노출
+  sgYear(c,y).forEach(function(t){ out.push(t); });
   if(y.stem==='丙'||y.branch==='午') out.push('불이 드러나는 해라 준비해 둔 실력은 평가받고, 감추던 것도 함께 드러납니다. 보여 줄 대표 활동을 고르고 불리한 기록은 미리 점검하세요. [정341·349]');
   return out;
 }
@@ -1764,7 +1800,7 @@ function unCard(c,u,gender,isDaeun){
   R.push(['어떻게', jo(far,'과와')+'는 조금 거리를 두는 것이 서로 편합니다. '+near+'의 도움은 반갑게 받되 기대지는 마세요. '+(lowStage?'무리한 확장보다 지키는 쪽을 택하세요.':'지금 운에 맞는 일(위 「일의 방향」)에 힘을 모으세요.')]);
   return R;
 }
-return {body:body,yearBody:yearBody,examples:examples,yearEx:yearEx,chartMore:chartMore,yearMore:yearMore,yearJdc:yearJdc,unCard:unCard};
+return {sgParts:sgParts,sgWork:sgWork,body:body,yearBody:yearBody,examples:examples,yearEx:yearEx,chartMore:chartMore,yearMore:yearMore,yearJdc:yearJdc,unCard:unCard};
 })();
 
 /* 있었을 일 3개 + 그 일이 일어난 이유 / 일: 타고난 재능과 직업 추천
@@ -1999,6 +2035,7 @@ function build(input){
   var c=PD.read(input), X=PX.explain(c), R=PD.render(c), J=sections(R), G={};
   PG.glyphs(c).forEach(function(g){ G[g.g]=g; });
   var L=PG.links(c), linkRaw=c.c1.links, E8=PE.eight(c);
+  E8.forEach(function(e){ var gg=c.c1.glyphs.filter(function(z){return z.g===e.g;})[0]; if(gg&&e.g!=='일간'){ var sp=PT.sgParts(c,gg); if(sp.length){ var k0=e.parts.map(function(q){return q[0];}).indexOf('자리와 십성'); Array.prototype.splice.apply(e.parts,[k0<0?e.parts.length:k0+1,0].concat(sp)); } } });
   E8.forEach(function(e){ var s=X.c6.filter(function(z){return z.g===e.g;})[0]; if(!s) return; var k=e.parts.map(function(q){return q[0];}).indexOf('자리와 십성'); e.parts.splice(k<0?e.parts.length:k+1,0,['자리의 사람',s.text]); });
   function gl(g){ return c.c1.glyphs.filter(function(x){return x.g===g;})[0]; }
   function glJudge(g){ var x=gl(g); if(!x) return ''; return x.g+' '+x.char+' · '+x.ten+(x.state?' · '+x.state:'')+(x.hidden?' · '+x.group+' · 지장간 '+x.hidden.map(function(h){return h.pos+h.char+'('+h.ten+(h.shown?'·투간':'')+')';}).join(' '):'')+' · 자리: '+x.gm; }
@@ -2031,7 +2068,7 @@ function build(input){
   var il=[
     {id:'innate',title:'타고난 여덟 글자로 본 일 — 뛰어난 능력과 어울리는 일',src:'四장 · 六장 1-4 · 왕한 십성 적성론〔R13〕 · 원탑 [36][100]',
      judge:PJd.abil.map(function(a){return '능력 '+a.ten+' '+a.score+'점 ← '+a.ev.join('·');}).join('\n')+'\n'+PJd.states.map(function(x){return '상태 '+x.g+' '+x.char+' '+x.state;}).join('\n')+'\n업종 오행: '+PJd.elJobs.map(function(x){return x.el+'('+x.group+')';}).join(', ')+' · 구조 '+(PJd.struct.join(',')||'-'),
-     read:{lead:PJx.lead,why:PJx.why,past:PJx.past,todo:PJx.todo}, paras:PV.work(c,PJd)},
+     read:{lead:PJx.lead,why:PJx.why,past:PJx.past,todo:PJx.todo}, paras:PV.work(c,PJd).concat(PT.sgWork(c))},
     {id:'gyeok',title:'사회가 보는 나 — 격',src:'六장 1 · 자평진전〔B1·R10·R8〕 · 정127·136',judge:J['⑤'],read:X.c5},
     {id:'frame',title:'직업의 틀 — 월간·월지',src:'三장 3 · 정103',judge:[glJudge('월간'),glJudge('월지')].join('\n'),paras:[G['월간'].text,G['월지'].text]},
     {id:'struct',title:'일하는 구조',src:'四장 3',judge:J['⑦'],read:X.c7}];
