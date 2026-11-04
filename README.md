@@ -1,6 +1,6 @@
 # 그 집 · 명식 판독
 
-앱 주소: https://jsharevalue-create.github.io/myeongsik-pandok/
+하나로 합친 판독 앱(v6.0~). Netlify에 올리면 `netlify/edge-functions/claude.js`가 `/api/claude`로 Claude를 부른다. API 키는 Netlify 환경 변수 `ANTHROPIC_API_KEY`에만 둔다(저장소에 넣지 않음). `PANDOK_CODE`를 넣으면 이용 코드를 아는 사람만 판독 가능. GitHub Pages에서는 서버가 없어 명식·해설·궁합만 보인다.
 
 GitHub Pages는 화면을 제공합니다. 실제 Claude 호출은 backend/worker/index.js 서버가 처리합니다. GitHub Pages 자체는 서버 코드를 실행하지 않습니다. API 키는 저장소·클라이언트 소스에 넣지 않습니다.
 
